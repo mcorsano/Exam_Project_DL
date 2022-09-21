@@ -13,7 +13,7 @@ IMAGE_SIZE = 256
 CHANNELS_IMG = 3
 L1_LAMBDA = 100
 LAMBDA_GP = 10
-NUM_EPOCHS = 2
+NUM_EPOCHS = 5
 
 
 def save_images(gen, val_loader, epoch, folder):
