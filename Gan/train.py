@@ -6,21 +6,18 @@ from torchvision.utils import save_image
 
 
 
-
 def train_model(dataLoader, generator, discriminator, generator_optimizer, discriminator_optimizer, lossCriteria):
     fixed_noise = torch.randn((utilities.BATCH_SIZE, utilities.Z_DIM)).to(utilities.DEVICE)
 
-    step = 0
-
     for epoch in range(utilities.NUM_EPOCHS):
-        for batch_idx, (real_img, label) in enumerate(dataLoader):          # batch_idx, (real_images, labels)
+        for batch_idx, (real_img, _) in enumerate(dataLoader):          # batch_idx, (real_images, labels)
             real_img = real_img.view(-1, 784).to(utilities.DEVICE)      # linearization
 
             ### Train Discriminator: max log(D(real)) + log(1 - D(G(noise)))
             noise = torch.randn(utilities.BATCH_SIZE, utilities.Z_DIM).to(utilities.DEVICE)  # from gaussian(0,1), shape(32x64)
             fake = generator(noise)
 
-            disc_real = discriminator(real_img).view(-1)   # flattened
+            disc_real = discriminator(real_img).view(-1)   # flattened. it has shape torch.Size([32])
             lossD_real = lossCriteria(disc_real, torch.ones_like(disc_real))
 
             disc_fake = discriminator(fake).view(-1)
@@ -29,7 +26,7 @@ def train_model(dataLoader, generator, discriminator, generator_optimizer, discr
             lossD = (lossD_real + lossD_fake) / 2
 
             discriminator.zero_grad()
-            lossD.backward(retain_graph=True)
+            lossD.backward(retain_graph=True)   # bc we need "fake" for the training of the generator
             discriminator_optimizer.step()
 
             ### Train Generator: min log(1 - D(G(z))) <-> max log(D(G(z))
@@ -37,6 +34,7 @@ def train_model(dataLoader, generator, discriminator, generator_optimizer, discr
             # since performs better in terms of saturating gradient
             output = discriminator(fake).view(-1)
             lossG = lossCriteria(output, torch.ones_like(output))
+
             generator.zero_grad()
             lossG.backward()
             generator_optimizer.step()
@@ -49,12 +47,9 @@ def train_model(dataLoader, generator, discriminator, generator_optimizer, discr
 
                 with torch.no_grad():
                     fake = generator(fixed_noise).reshape(-1, 1, 28, 28)
-                    data = real_img.reshape(-1, 1, 28, 28)
+                    real = real_img.reshape(-1, 1, 28, 28)
 
-                    save_image(fake*0.5+0.5, f"saved_images/fake_{epoch}.png")
-                    save_image(data*0.5+0.5, f"saved_images/real_{epoch}.png")
-
-                    step += 1
-
+                    save_image(fake, f"saved_images/fake_{epoch}.png", normalize=True)
+                    save_image(real, f"saved_images/real_{epoch}.png", normalize=True)
 
 

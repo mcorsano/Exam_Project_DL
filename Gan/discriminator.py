@@ -10,7 +10,7 @@ class Discriminator(nn.Module):
             nn.Linear(img_dim, 128),
             nn.LeakyReLU(0.01),
             nn.Linear(128, 1),   # fake=0, real=1
-            nn.Sigmoid() 
+            nn.Sigmoid(),   
         )
 
     def forward(self, x):
