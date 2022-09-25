@@ -11,6 +11,7 @@ IMAGE_DIM = 28*28*1   # 784
 NUM_EPOCHS = 100
 
 
+
 transforms = transforms.Compose(
     [
         transforms.ToTensor(), 
