@@ -23,7 +23,7 @@ class D_Block(nn.Module):
         super().__init__()
         self.mod = nn.Sequential(
             nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=4, stride=2, padding=1, bias=False),
-            #nn.BatchNorm2d(out_channels),
+            nn.BatchNorm2d(out_channels),     # because of the batch normalization, we set bias false in Conv layer above
             nn.LeakyReLU(0.2)
         )
     

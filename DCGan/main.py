@@ -7,36 +7,31 @@ import utilities
 from torch.utils.data import DataLoader
 from train import *
 import torch.optim as optim
-# from dataset import PokemonDataset
 
 
 
 def main():
-    # If you train on MNIST, remember to set channels_img to 1
-    dataset = datasets.MNIST(root="dataset/", train=True, transform=utilities.transforms, download=True)
-    # dataset = PokemonDataset(dataset_dir=utilities.DATASET_DIR)
-
-    # comment mnist above and uncomment below if train on CelebA
-    #dataset = datasets.ImageFolder(root="celeb_dataset", transform=transforms)
+    # remember to set IMAGE_CHANNELS to 1 when using MNIST dataset
+    # dataset = datasets.MNIST(root="mnistDataset/", train=True, transform=utilities.transforms, download=True)
+    # dataset = datasets.CelebA(root="celebaDataset/", transform=utilities.transforms, download=True)
+    dataset = datasets.Flowers102(root="flowersDataset/", transform=utilities.transforms, download=True)
     dataloader = DataLoader(dataset, batch_size=utilities.BATCH_SIZE, shuffle=True)
-    gen = Generator(utilities.NOISE_DIM, utilities.CHANNELS_IMG, utilities.FEATURES_GEN).to(utilities.DEVICE)
-    disc = Discriminator(utilities.CHANNELS_IMG, utilities.FEATURES_DISC).to(utilities.DEVICE)
-    initialize_weights(gen)
-    initialize_weights(disc)
+    
+    generator = Generator(utilities.NOISE_DIM, utilities.IMAGE_CHANNELS, utilities.FEATURES_GEN).to(utilities.DEVICE)
+    discriminator = Discriminator(utilities.IMAGE_CHANNELS, utilities.FEATURES_DISC).to(utilities.DEVICE)
+    
+    initialize_weights(generator)
+    initialize_weights(discriminator)
 
-    opt_gen = optim.Adam(gen.parameters(), lr=utilities.G_LEARNING_RATE, betas=(0.5, 0.999))
-    opt_disc = optim.Adam(disc.parameters(), lr=utilities.D_LEARNING_RATE, betas=(0.5, 0.999))
-    criterion = nn.BCELoss()
-    # criterion = nn.BCEWithLogitsLoss()
+    generator_optimizer = optim.Adam(generator.parameters(), lr=utilities.LEARNING_RATE, betas=(0.5, 0.999))
+    discriminator_optimizer = optim.Adam(discriminator.parameters(), lr=utilities.LEARNING_RATE, betas=(0.5, 0.999))
+    
+    lossCriteria = nn.BCELoss()
 
-    # writer_real = SummaryWriter(f"logs/real")
-    # writer_fake = SummaryWriter(f"logs/fake")
-    # step = 0
+    generator.train()
+    discriminator.train()
 
-    gen.train()
-    disc.train()
-
-    train_model(dataloader, gen, disc, opt_gen, opt_disc, criterion)
+    train_model(dataloader, generator, discriminator, generator_optimizer, discriminator_optimizer, lossCriteria)
 
 
 if __name__ == '__main__':

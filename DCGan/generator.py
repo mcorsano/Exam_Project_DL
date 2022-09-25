@@ -8,12 +8,12 @@ class Generator(nn.Module):
 
     def __init__(self, channel_noise, img_channels, features_g):
         super().__init__()
-        layers = list((
-            G_Block(in_channels=channel_noise, out_channels=features_g*16, kernel_size=4, stride=1, padding=0),
-            G_Block(in_channels=features_g*16, out_channels=features_g*8, kernel_size=4, stride=2, padding=1),
-            G_Block(in_channels=features_g*8, out_channels=features_g*4, kernel_size=4, stride=2, padding=1),
-            G_Block(in_channels=features_g*4, out_channels=features_g*2, kernel_size=4, stride=2, padding=1),
-            G_FinalBlock(in_channels=features_g*2, out_channels=img_channels)
+        layers = list((                                                                                             # input: N x z_dim x 1 x 1
+            G_Block(in_channels=channel_noise, out_channels=features_g*16, kernel_size=4, stride=1, padding=0),     # N x features_g*16 x 4 x 4
+            G_Block(in_channels=features_g*16, out_channels=features_g*8, kernel_size=4, stride=2, padding=1),      # N x features_g*8 x 8 x 8
+            G_Block(in_channels=features_g*8, out_channels=features_g*4, kernel_size=4, stride=2, padding=1),       # N x features_g*4 x 16 x 16
+            G_Block(in_channels=features_g*4, out_channels=features_g*2, kernel_size=4, stride=2, padding=1),       # N x features_g*2 x 32 x 32
+            G_FinalBlock(in_channels=features_g*2, out_channels=img_channels)                                       # N x 1 x 64 x 64
         ))
 
         self.mod = nn.Sequential(*layers)
