@@ -19,6 +19,8 @@ class Discriminator(nn.Module):
 
     def forward(self, x, y):
         # y can be either fake or real.
-        # is task of the disciminator to tell it
+        # is task of the discriminator to tell it
         x = torch.cat([x,y], dim=1)
         return self.model(x)
+
+

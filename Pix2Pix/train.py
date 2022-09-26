@@ -14,50 +14,45 @@ import matplotlib.pyplot as plt
 
 
 
-def train_epoch(discriminator, generator, dataloader, discriminator_optimizer, generator_optimizer, L1_loss, bce):
+def train_model(dataloader, generator, discriminator, generator_optimizer, discriminator_optimizer, L1_loss, bce):
 
     loop = tqdm(dataloader, leave=True)
 
-    for idx, (x, y) in enumerate(loop):
-        x = x.to(utilities.DEVICE)
-        y = y.to(utilities.DEVICE)
+    for epoch in range(utilities.NUM_EPOCHS):
+        for batch_idx, (real, gen_real) in enumerate(loop):
+            real = real.to(utilities.DEVICE)
+            gen_real = gen_real.to(utilities.DEVICE)
+            gen_fake = generator(real)
 
-        # Train Discriminator
-        y_fake = generator(x)
-        D_real = discriminator(x, y)
-        D_real_loss = bce(D_real, torch.ones_like(D_real))
-        D_fake = discriminator(x, y_fake.detach())
-        D_fake_loss = bce(D_fake, torch.zeros_like(D_fake))
-        D_loss = (D_real_loss + D_fake_loss) / 2
+            # Train Discriminator
+            D_real = discriminator(real, gen_real)
+            loss_D_real = bce(D_real, torch.ones_like(D_real))
 
-        discriminator.zero_grad()
-        D_loss.backward()
-        discriminator_optimizer.step()
+            D_fake = discriminator(real, gen_fake)
+            loss_D_fake = bce(D_fake, torch.zeros_like(D_fake))
 
-        # Train generator
-        D_fake = discriminator(x, y_fake)
-        G_fake_loss = bce(D_fake, torch.ones_like(D_fake))
-        L1 = L1_loss(y_fake, y) * utilities.L1_LAMBDA
-        G_loss = G_fake_loss + L1
+            discriminator_loss = (loss_D_real + loss_D_fake) / 2
 
-        generator_optimizer.zero_grad()
-        G_loss.backward()
-        generator_optimizer.step()
+            discriminator.zero_grad()
+            discriminator_loss.backward(retain_graph=True)
+            discriminator_optimizer.step()
 
-        if idx % 10 == 0:
-            loop.set_postfix(
-                D_real=torch.sigmoid(D_real).mean().item(),
-                D_fake=torch.sigmoid(D_fake).mean().item(),
-            )
+            # Train generator
+            D_fake = discriminator(real, gen_fake)
+            loss_G_fake = bce(D_fake, torch.ones_like(D_fake))
+            
+            L1 = L1_loss(gen_fake, gen_real) * utilities.L1_LAMBDA   # in the paper they added the L1 loss to the generator loss
+            generator_loss = loss_G_fake + L1
 
+            generator_optimizer.zero_grad()
+            generator_loss.backward()
+            generator_optimizer.step()
 
+            if batch_idx % 10 == 0:
 
-    print("done")
+                print(
+                    f"Epoch [{epoch}/{utilities.NUM_EPOCHS}] Batch {batch_idx}/{len(dataloader)} \
+                        Loss D: {discriminator_loss:.4f}, loss G: {generator_loss:.4f}"
+                )
 
-
-
-def train_model(discriminator, generator, train_dataLoader, validation_dataLoader, D_optimizer, G_optimizer, L1_LOSS, BCE):
-        for epoch in range(utilities.NUM_EPOCHS):
-            train_epoch(discriminator, generator, train_dataLoader, D_optimizer, G_optimizer, L1_LOSS, BCE)
-
-            utilities.save_images(generator, validation_dataLoader, epoch, folder="validations")
+                utilities.save_images(generator, dataloader, epoch, folder="validations")

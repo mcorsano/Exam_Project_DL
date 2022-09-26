@@ -7,14 +7,14 @@ class Generator(nn.Module):
 
     def __init__(self):
         super().__init__()
-        self.down1 = G_NonBatchBlock(in_channels=3, out_channels=64, activation="LeakyReLU")
-        self.down2 = G_DownBlock(in_channels=64, out_channels=128)
-        self.down3 = G_DownBlock(in_channels=128, out_channels=256)
-        self.down4 = G_DownBlock(in_channels=256, out_channels=512)
-        self.down5 = G_DownBlock(in_channels=512, out_channels=512)
-        self.down6 = G_DownBlock(in_channels=512, out_channels=512)
-        self.down7 = G_DownBlock(in_channels=512, out_channels=512)
-        self.steady = G_NonBatchBlock(in_channels=512, out_channels=512, activation="ReLU")
+        self.down1 = G_NonBatchBlock(in_channels=3, out_channels=64, activation="LeakyReLU")      # 128
+        self.down2 = G_DownBlock(in_channels=64, out_channels=128)                                # 64
+        self.down3 = G_DownBlock(in_channels=128, out_channels=256)                               # 32
+        self.down4 = G_DownBlock(in_channels=256, out_channels=512)                               # 16
+        self.down5 = G_DownBlock(in_channels=512, out_channels=512)                               # 8
+        self.down6 = G_DownBlock(in_channels=512, out_channels=512)                               # 4
+        self.down7 = G_DownBlock(in_channels=512, out_channels=512)                               # 2
+        self.steady = G_NonBatchBlock(in_channels=512, out_channels=512, activation="ReLU")       # 1 x 1
         self.up1 = G_UpBlock(in_channels=512, out_channels=512, dropout=True)
         self.up2 = G_UpBlock(in_channels=512*2, out_channels=512, dropout=True)
         self.up3 = G_UpBlock(in_channels=512*2, out_channels=512, dropout=True)
@@ -26,14 +26,14 @@ class Generator(nn.Module):
 
 
     def forward(self, x):
-        down1 = self.down1(x)
-        down2 = self.down2(down1)
-        down3 = self.down3(down2)
-        down4 = self.down4(down3)
-        down5 = self.down5(down4)
-        down6 = self.down6(down5)
-        down7 = self.down7(down6)
-        steady = self.steady(down7)
+        down1 = self.down1(x)            
+        down2 = self.down2(down1)        
+        down3 = self.down3(down2)        
+        down4 = self.down4(down3)        
+        down5 = self.down5(down4)        
+        down6 = self.down6(down5)        
+        down7 = self.down7(down6)        
+        steady = self.steady(down7)      
         up1 = self.up1(steady)
         up2 = self.up2(torch.cat([up1, down7], 1))
         up3 = self.up3(torch.cat([up2, down6], 1))
