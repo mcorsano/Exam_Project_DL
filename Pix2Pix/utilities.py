@@ -2,6 +2,7 @@ import torch
 from torchvision.utils import save_image
 
 
+
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 TRAIN_DIR = "data/maps/train"
 VAL_DIR = "data/maps/val"
