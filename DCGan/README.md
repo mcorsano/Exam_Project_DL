@@ -10,6 +10,6 @@ The three datasets are:
 * Flower102 dataset: category dataset, consisting of 102 flower categories occuring in the United Kingdom. Each class consists of between 40 and 258 images.
 
 # Results
-![](saved_images/fake_4_400.png) 
-![](saved_images/fake_4_1220.png)
-![](saved_images/fake_4695_0.png)
+![](saved_images/fake_4_400.png)   (MNIST dataset)
+![](saved_images/fake_4_1220.png)  (CelebA dataset)
+![](saved_images/fake_4695_0.png)  (Flower102 dataset)
