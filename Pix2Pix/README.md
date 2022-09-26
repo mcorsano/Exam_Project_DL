@@ -16,4 +16,4 @@ The folders containing the dataset must follow the following hierarchy:
 </pre>
 
 ## Results
-<img src="C:\Users\Mema\Desktop\DATA SCIENCE\DeepLearning\exam_project\pytorch-pix2pix\generata.png"  title="generated">
+![](../../exam_project/pytorch-pix2pix/reale.png)
