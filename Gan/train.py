@@ -17,32 +17,32 @@ def train_model(dataLoader, generator, discriminator, generator_optimizer, discr
             noise = torch.randn(utilities.BATCH_SIZE, utilities.Z_DIM).to(utilities.DEVICE)  # from gaussian(0,1), shape(32x64)
             fake = generator(noise)
 
-            disc_real = discriminator(real_img).view(-1)   # flattened. it has shape torch.Size([32])
-            lossD_real = lossCriteria(disc_real, torch.ones_like(disc_real))
+            D_real = discriminator(real_img).view(-1)   # flattened. it has shape torch.Size([32])
+            loss_D_real = lossCriteria(D_real, torch.ones_like(D_real))
 
-            disc_fake = discriminator(fake).view(-1)
-            lossD_fake = lossCriteria(disc_fake, torch.zeros_like(disc_fake))
+            D_fake = discriminator(fake).view(-1)
+            loss_D_fake = lossCriteria(D_fake, torch.zeros_like(D_fake))
 
-            lossD = (lossD_real + lossD_fake) / 2
+            discriminator_loss = (loss_D_real + loss_D_fake) / 2
 
             discriminator.zero_grad()
-            lossD.backward(retain_graph=True)   # bc we need "fake" for the training of the generator
+            discriminator_loss.backward(retain_graph=True)   # bc we need "fake" for the training of the generator
             discriminator_optimizer.step()
 
-            ### Train Generator: min log(1 - D(G(z))) <-> max log(D(G(z))
+            ### Train Generator: min log(1 - D(G(noise))) <-> max log(D(G(noise))
             # we decide to go for the maximization instead of the minimization process
             # since performs better in terms of saturating gradient
             output = discriminator(fake).view(-1)
-            lossG = lossCriteria(output, torch.ones_like(output))
+            generator_loss = lossCriteria(output, torch.ones_like(output))
 
             generator.zero_grad()
-            lossG.backward()
+            generator_loss.backward()
             generator_optimizer.step()
 
             if batch_idx == 0:
                 print(
                     f"Epoch [{epoch}/{utilities.NUM_EPOCHS}] Batch {batch_idx}/{len(dataLoader)} \
-                        Loss D: {lossD:.4f}, loss G: {lossG:.4f}"
+                        Loss D: {discriminator_loss:.4f}, loss G: {generator_loss:.4f}"
                 )
 
                 with torch.no_grad():
