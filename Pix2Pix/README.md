@@ -16,4 +16,5 @@ The folders containing the dataset must follow the following hierarchy:
 </pre>
 
 ## Results
-![](../../exam_project/pytorch-pix2pix/reale.png)
+![](validations/generated.png)
+![](validations/real.png)
