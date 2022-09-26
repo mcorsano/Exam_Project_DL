@@ -3,7 +3,7 @@ CycleGan is an approach for learning to translate an image from a source domain 
 
 ## Dataset
 The network has been trained on the "Horse2Zebra" dataset, downloaded from Kaggle. The folder hierarchy of the dataset must be the following:  
-data  
+
 <pre>
 ├───data  
 │   └───train  
