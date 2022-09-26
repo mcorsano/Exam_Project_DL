@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from discriminator_bloks import *
+from discriminator_blocks import *
 
   
 class Discriminator(nn.Module):

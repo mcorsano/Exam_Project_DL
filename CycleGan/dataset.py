@@ -3,34 +3,34 @@ import os
 from torch.utils.data import Dataset
 import numpy as np
 
-class HorseZebraDataset(Dataset):
-    def __init__(self, root_zebra, root_horse, transform=None):
-        self.root_zebra = root_zebra
-        self.root_horse = root_horse
+class CycleGanDataset(Dataset):
+    def __init__(self, directory_x, directory_y, transform=None):
+        self.directory_x = directory_x
+        self.directory_y = directory_y
         self.transform = transform
 
-        self.zebra_images = os.listdir(root_zebra)
-        self.horse_images = os.listdir(root_horse)
-        self.length_dataset = max(len(self.zebra_images), len(self.horse_images)) # 1000, 1500
-        self.zebra_len = len(self.zebra_images)
-        self.horse_len = len(self.horse_images)
+        self.images_x = os.listdir(directory_x)
+        self.images_y = os.listdir(directory_y)
+        
+        self.length_dataset = max(len(self.images_x), len(self.images_y)) # 1000, 1500
+        self.len_x = len(self.images_x)
+        self.len_y = len(self.images_y)
 
     def __len__(self):
         return self.length_dataset
 
     def __getitem__(self, index):
-        zebra_img = self.zebra_images[index % self.zebra_len]
-        horse_img = self.horse_images[index % self.horse_len]
+        image_x = self.images_x[index % self.len_x]        # we take the % bc datasets of x and y can be of different sizes 
+        path_x = os.path.join(self.directory_x, image_x)
+        image_x = np.array(Image.open(path_x).convert("RGB"))
 
-        zebra_path = os.path.join(self.root_zebra, zebra_img)
-        horse_path = os.path.join(self.root_horse, horse_img)
-
-        zebra_img = np.array(Image.open(zebra_path).convert("RGB"))
-        horse_img = np.array(Image.open(horse_path).convert("RGB"))
+        image_y = self.images_y[index % self.len_y]
+        path_y = os.path.join(self.directory_y, image_y)
+        image_y = np.array(Image.open(path_y).convert("RGB"))
 
         if self.transform:
-            augmentations = self.transform(image=zebra_img, image0=horse_img)
-            zebra_img = augmentations["image"]
-            horse_img = augmentations["image0"]
+            augmentations = self.transform(image=image_x, image0=image_y)
+            image_x = augmentations["image"]
+            image_y = augmentations["image0"]
 
-        return zebra_img, horse_img
+        return image_x, image_y

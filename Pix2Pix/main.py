@@ -1,8 +1,6 @@
 from cgi import test
 from ctypes import util
-from typing_extensions import dataclass_transform
 import torch
-from test import test_model
 import utilities
 import torch.nn as nn
 import torch.optim as optim
@@ -14,17 +12,19 @@ from tqdm import tqdm
 from torchvision.utils import save_image
 import matplotlib.pyplot as plt
 from train import train_model
+from test import test_model
 
 
 
 
 
 def main():
-    discriminator = Discriminator()
-    generator = Generator()
+    discriminator = Discriminator().to(utilities.DEVICE)
+    generator = Generator().to(utilities.DEVICE)
 
-    D_optimizer = optim.Adam(discriminator.parameters(), lr=utilities.LEARNING_RATE, betas=(0.5, 0.999))
-    G_optimizer = optim.Adam(generator.parameters(), lr=utilities.LEARNING_RATE, betas=(0.5, 0.999))
+    discriminator_optimizer = optim.Adam(discriminator.parameters(), lr=utilities.LEARNING_RATE, betas=(0.5, 0.999))
+    generator_optimizer = optim.Adam(generator.parameters(), lr=utilities.LEARNING_RATE, betas=(0.5, 0.999))
+    
     BCE = nn.BCEWithLogitsLoss()
     L1_LOSS = nn.L1Loss()
 
@@ -37,8 +37,11 @@ def main():
     test_dataset = Pix2PixDataset(dataset_dir=utilities.TEST_DIR)
     test_dataLoader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=False)
 
-    train_model(discriminator, generator, train_dataLoader, validation_dataLoader, D_optimizer, G_optimizer, L1_LOSS, BCE)
+    train_model(train_dataLoader, generator, discriminator, generator_optimizer, discriminator_optimizer, L1_LOSS, BCE)
     test_model(generator=generator, testLoader=test_dataLoader)    
+
+
+
 
 if __name__ == "__main__":
     main()

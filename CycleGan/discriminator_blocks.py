@@ -21,7 +21,7 @@ class D_Block(nn.Module):
         super().__init__()
         self.mod = nn.Sequential(
             nn.Conv2d(in_channels=in_channels, out_channels=out_channels, stride=stride, kernel_size=4, padding=1, bias=True, padding_mode="reflect"),
-            nn.InstanceNorm2d(out_channels),
+            nn.InstanceNorm2d(out_channels), 
             nn.LeakyReLU(0.2, inplace=True),
         )
 

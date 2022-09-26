@@ -2,7 +2,6 @@ import torch
 from torchvision.utils import save_image
 
 
-
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 TRAIN_DIR = "data/maps/train"
 VAL_DIR = "data/maps/val"
@@ -27,6 +26,5 @@ def save_images(generator, validationLoader, epoch, folder):
         gen_fake = generator(real)
         save_image(real*0.5+0.5, folder + f"/real_{epoch}.png")
         save_image(gen_fake*0.5+0.5, folder + f"/gen_fake_{epoch}.png")
-        if epoch == 1:
-            save_image(gen_real*0.5+0.5, folder + f"/label_{epoch}.png")
+        save_image(gen_real*0.5+0.5, folder + f"/label_{epoch}.png")
     generator.train()

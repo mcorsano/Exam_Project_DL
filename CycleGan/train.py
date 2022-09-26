@@ -1,5 +1,5 @@
 import torch
-from dataset import HorseZebraDataset
+from dataset import CycleGanDataset
 import sys
 from torch.utils.data import DataLoader
 import torch.nn as nn
@@ -12,77 +12,78 @@ import utilities
 
 
 
-def train_epoch(H_generator, H_discriminator, Z_generator, Z_discriminator, dataLoader, discriminator_optimizer, generator_optimizer, L1_loss, mse):
-    H_reals = 0
-    H_fakes = 0
-    loop = tqdm(dataLoader, leave=True)
+def train_model(y_generator, y_discriminator, x_generator, x_discriminator, dataLoader, discriminator_optimizer, generator_optimizer, L1_loss, mse):
+    
+    # loop = tqdm(dataLoader, leave=True)
+    
+    for epoch in range(utilities.NUM_EPOCHS): 
 
-    for idx, (zebra, horse) in enumerate(loop):
-        zebra = zebra.to(utilities.DEVICE)
-        horse = horse.to(utilities.DEVICE)
+        loop = tqdm(dataLoader, leave=True)
 
-        # Train discriminators
-        fake_horse = H_generator(zebra)
-        D_H_real = H_discriminator(horse)
-        D_H_fake = H_discriminator(fake_horse.detach())
-        H_reals += D_H_real.mean().item()
-        H_fakes += D_H_fake.mean().item()
-        D_H_real_loss = mse(D_H_real, torch.ones_like(D_H_real))
-        D_H_fake_loss = mse(D_H_fake, torch.zeros_like(D_H_fake))
-        D_H_loss = D_H_real_loss + D_H_fake_loss
+        for batch_idx, (x, y) in enumerate(loop):
+            x = x.to(utilities.DEVICE)
+            y = y.to(utilities.DEVICE)
 
-        fake_zebra = Z_generator(horse)
-        D_Z_real = Z_discriminator(zebra)
-        D_Z_fake = Z_discriminator(fake_zebra.detach())
-        D_Z_real_loss = mse(D_Z_real, torch.ones_like(D_Z_real))
-        D_Z_fake_loss = mse(D_Z_fake, torch.zeros_like(D_Z_fake))
-        D_Z_loss = D_Z_real_loss + D_Z_fake_loss
+            # Train discriminators
+            fake_y = y_generator(x)
+            y_disc_real = y_discriminator(y)
+            y_disc_fake = y_discriminator(fake_y.detach())
+            loss_y_disc_real = mse(y_disc_real, torch.ones_like(y_disc_real))
+            loss_y_disc_fake = mse(y_disc_fake, torch.zeros_like(y_disc_fake))
+            loss_y_disc_total = loss_y_disc_real + loss_y_disc_fake
 
-        # put it togethor
-        D_loss = (D_H_loss + D_Z_loss)/2
+            fake_x = x_generator(y)
+            x_disc_real = x_discriminator(x)
+            x_disc_fake = x_discriminator(fake_x.detach())
+            loss_x_disc_real = mse(x_disc_real, torch.ones_like(x_disc_real))
+            loss_x_disc_fake = mse(x_disc_fake, torch.zeros_like(x_disc_fake))
+            loss_x_disc_total = loss_x_disc_real + loss_x_disc_fake
 
-        discriminator_optimizer.zero_grad()
-        D_loss.backward()
-        discriminator_optimizer.step()
-        #discriminator_optimizer.update()
+            # discriminator loss
+            discriminator_loss = (loss_y_disc_total + loss_x_disc_total)/2
 
-        # Train Generators H and Z
-        # adversarial loss for both generators
-        D_H_fake = H_discriminator(fake_horse)
-        D_Z_fake = Z_discriminator(fake_zebra)
-        loss_G_H = mse(D_H_fake, torch.ones_like(D_H_fake))
-        loss_G_Z = mse(D_Z_fake, torch.ones_like(D_Z_fake))
+            discriminator_optimizer.zero_grad()
+            discriminator_loss.backward()
+            discriminator_optimizer.step()
 
-        # cycle loss
-        cycle_zebra = Z_generator(fake_horse)
-        cycle_horse = H_generator(fake_zebra)
-        cycle_zebra_loss = L1_loss(zebra, cycle_zebra)
-        cycle_horse_loss = L1_loss(horse, cycle_horse)
 
-        # identity loss (remove these for efficiency if you set lambda_identity=0)
-        identity_zebra = Z_generator(zebra)
-        identity_horse = H_generator(horse)
-        identity_zebra_loss = L1_loss(zebra, identity_zebra)
-        identity_horse_loss = L1_loss(horse, identity_horse)
+            # Train Generators 
+            # adversarial loss
+            y_disc_fake = y_discriminator(fake_y)
+            x_disc_fake = x_discriminator(fake_x)
+            loss_y_gen = mse(y_disc_fake, torch.ones_like(y_disc_fake))
+            loss_x_gen = mse(x_disc_fake, torch.ones_like(x_disc_fake))
 
-        # add all togethor
-        G_loss = (
-            loss_G_Z
-            + loss_G_H
-            + cycle_zebra_loss * utilities.LAMBDA_CYCLE
-            + cycle_horse_loss * utilities.LAMBDA_CYCLE
-            + identity_horse_loss * utilities.LAMBDA_IDENTITY
-            + identity_zebra_loss * utilities.LAMBDA_IDENTITY
-        )
+            # identity loss
+            identity_loss_x = L1_loss(x, x_generator(x))
+            identity_loss_y = L1_loss(y, y_generator(y))
 
-        generator_optimizer.zero_grad()
-        G_loss.backward()
-        generator_optimizer.step()
-        #generator_optimizer.update()
+            # cycle loss
+            cycle_loss_x = L1_loss(x, x_generator(fake_y))
+            cycle_loss_y = L1_loss(y, y_generator(fake_x))
 
-        if idx % 5 == 0:                                                                            #○ chenged from 200 to 5
-            save_image(fake_horse*0.5+0.5, f"saved_images/horse_{idx}.png")
-            save_image(fake_zebra*0.5+0.5, f"saved_images/zebra_{idx}.png")
+            # generator loss
+            generator_loss = (
+                loss_x_gen
+                + loss_y_gen
+                + cycle_loss_x * utilities.LAMBDA_CYCLE_LOSS
+                + cycle_loss_y * utilities.LAMBDA_CYCLE_LOSS
+                + identity_loss_y * utilities.LAMBDA_IDENTITY_LOSS
+                + identity_loss_x * utilities.LAMBDA_IDENTITY_LOSS
+            )
 
-        loop.set_postfix(H_real=H_reals/(idx+1), H_fake=H_fakes/(idx+1))
-        
+            generator_optimizer.zero_grad()
+            generator_loss.backward()
+            generator_optimizer.step()
+
+            if batch_idx % 100 == 0:         
+
+                print(
+                    f"Epoch [{epoch}/{utilities.NUM_EPOCHS}] Batch {batch_idx}/{len(dataLoader)} \
+                        Loss D: {discriminator_loss:.4f}, loss G: {generator_loss:.4f}"
+                )
+
+                save_image(fake_y*0.5+0.5, f"saved_images1/horse_{epoch}_{batch_idx}.png")
+                save_image(fake_x*0.5+0.5, f"saved_images1/zebra_{epoch}_{batch_idx}.png")
+
+            
