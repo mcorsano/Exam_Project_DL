@@ -38,7 +38,7 @@ def train_model(y_generator, y_discriminator, x_generator, x_discriminator, data
             loss_x_disc_total = loss_x_disc_real + loss_x_disc_fake
 
             # discriminator loss
-            discriminator_loss = (loss_y_disc_total + loss_x_disc_total)/2
+            discriminator_loss = loss_y_disc_total + loss_x_disc_total
 
             discriminator_optimizer.zero_grad()
             discriminator_loss.backward()

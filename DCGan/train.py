@@ -34,7 +34,7 @@ def train_model(dataloader, generator, discriminator, generator_optimizer, discr
             D_fake = discriminator(fake_img).reshape(-1)
             loss_D_fake = lossCriteria(D_fake, torch.zeros_like(D_fake))
 
-            discriminator_loss = (loss_D_real + loss_D_fake) / 2
+            discriminator_loss = loss_D_real + loss_D_fake
 
             discriminator.zero_grad()
             discriminator_loss.backward(retain_graph=True)
