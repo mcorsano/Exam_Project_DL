@@ -15,7 +15,7 @@ def train_model(dataLoader, generator, discriminator, generator_optimizer, discr
             real_img = real_img.view(-1, 784).to(utilities.DEVICE)      # linearization
 
             ### Train Discriminator
-            ### loss funztion: max log(D(real)) + log(1 - D(G(z)))
+            ### loss function: max log(D(real)) + log(1 - D(G(z)))
             z = torch.randn(utilities.BATCH_SIZE, utilities.Z_DIM).to(utilities.DEVICE)  # from gaussian(0,1), shape(32x64)
             fake_img = generator(z)
 
