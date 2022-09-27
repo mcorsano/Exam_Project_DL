@@ -12,6 +12,9 @@ The network has been trained on the "Horse2Zebra" dataset, downloaded from Kaggl
 │   └───val
 │       └───horses
 |       └───zebras
+│   └───test
+│       └───horses
+│       └───zebras
 </pre>
 
 ## Results
