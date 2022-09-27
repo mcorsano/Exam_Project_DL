@@ -13,5 +13,5 @@ class Generator(nn.Module):
             nn.Tanh(),  # we'll normalize inputs to [-1, 1] so we need outputs (px values) in [-1, 1]
         )
 
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)

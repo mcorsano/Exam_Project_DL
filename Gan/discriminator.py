@@ -13,5 +13,5 @@ class Discriminator(nn.Module):
             nn.Sigmoid(),   
         )
 
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)
