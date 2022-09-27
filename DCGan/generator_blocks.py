@@ -13,8 +13,8 @@ class G_Block(nn.Module):
             nn.ReLU()
         )
     
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)
 
 
 
@@ -27,5 +27,5 @@ class G_FinalBlock(nn.Module):
             nn.Tanh()
         )
     
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)

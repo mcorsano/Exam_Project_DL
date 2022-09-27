@@ -12,8 +12,8 @@ class D_InitialBlock(nn.Module):
             nn.LeakyReLU(0.2)
         )
 
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)
 
 
 
@@ -27,8 +27,8 @@ class D_Block(nn.Module):
             nn.LeakyReLU(0.2)
         )
     
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)
 
 
 
@@ -41,5 +41,5 @@ class D_FinalBlock(nn.Module):
             nn.Sigmoid()
         )
     
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)
