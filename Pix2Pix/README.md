@@ -16,5 +16,6 @@ The folders containing the dataset must follow the following hierarchy:
 </pre>
 
 ## Results
-![](validations/generated.png)
-![](validations/real.png)
+Real:![](validations/real.png)
+Generated image:![](validations/generated.png)
+Real target:![](validations/label.png)
