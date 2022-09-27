@@ -28,5 +28,5 @@ class Generator(nn.Module):
 
         self.mod = nn.Sequential(*layers)
 
-    def forward(self, x):
-        return torch.tanh(self.mod(x))
+    def forward(self, data):
+        return torch.tanh(self.mod(data))

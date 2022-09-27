@@ -16,7 +16,7 @@ class Discriminator(nn.Module):
             D_FinalBlock(in_channels=512, out_channels=1, stride=1)
         ))
 
-        self.model = nn.Sequential(*layers)
+        self.mod = nn.Sequential(*layers)
 
-    def forward(self, x):
-        return torch.sigmoid(self.model(x))
+    def forward(self, data):
+        return torch.sigmoid(self.mod(data))

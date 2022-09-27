@@ -11,8 +11,8 @@ class D_InitialBlock(nn.Module):
             nn.LeakyReLU(0.2, inplace=True)
         )
     
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)
 
 
 
@@ -25,8 +25,8 @@ class D_Block(nn.Module):
             nn.LeakyReLU(0.2, inplace=True),
         )
 
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)
 
 
 
@@ -35,6 +35,6 @@ class D_FinalBlock(nn.Module):
         super().__init__()
         self.mod = nn.Conv2d(in_channels=in_channels, out_channels=1, kernel_size=4, stride=1, padding=1, padding_mode="reflect")
 
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)
 

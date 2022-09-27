@@ -12,8 +12,8 @@ class G_InitialBlock(nn.Module):
             nn.ReLU(),
         )
     
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)
 
 
 
@@ -26,8 +26,8 @@ class G_DownBlock(nn.Module):
             nn.ReLU() if use_ReLU else nn.Identity()
         )
 
-    def forward(self, x):
-        return self.conv(x)
+    def forward(self, data):
+        return self.conv(data)
 
 
 
@@ -40,8 +40,8 @@ class G_UpBlock(nn.Module):
             nn.ReLU() if use_ReLU else nn.Identity()
         )
 
-    def forward(self, x):
-        return self.conv(x)
+    def forward(self, data):
+        return self.conv(data)
 
 
 
@@ -53,5 +53,5 @@ class ResidualBlock(nn.Module):
             G_DownBlock(channels, channels, use_ReLU=False, kernel_size=3, padding=1),
         )
 
-    def forward(self, x):
-        return x + self.block(x)
+    def forward(self, data):
+        return data + self.block(data)

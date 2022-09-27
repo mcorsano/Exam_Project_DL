@@ -12,19 +12,17 @@ import utilities
 
 
 
-def train_model(y_generator, y_discriminator, x_generator, x_discriminator, dataLoader, discriminator_optimizer, generator_optimizer, L1_loss, mse):
+def train_model(y_generator, y_discriminator, x_generator, x_discriminator, dataLoader, val_dataLoader, discriminator_optimizer, generator_optimizer, L1_loss, mse):
     
-    # loop = tqdm(dataLoader, leave=True)
+    loop = tqdm(dataLoader, leave=True)
     
     for epoch in range(utilities.NUM_EPOCHS): 
 
-        loop = tqdm(dataLoader, leave=True)
-
-        for batch_idx, (x, y) in enumerate(loop):
+        for batch_index, (x, y) in enumerate(loop):
             x = x.to(utilities.DEVICE)
             y = y.to(utilities.DEVICE)
 
-            # Train discriminators
+            ### Train discriminators
             fake_y = y_generator(x)
             y_disc_real = y_discriminator(y)
             y_disc_fake = y_discriminator(fake_y.detach())
@@ -47,7 +45,7 @@ def train_model(y_generator, y_discriminator, x_generator, x_discriminator, data
             discriminator_optimizer.step()
 
 
-            # Train Generators 
+            ### Train Generators 
             # adversarial loss
             y_disc_fake = y_discriminator(fake_y)
             x_disc_fake = x_discriminator(fake_x)
@@ -76,14 +74,13 @@ def train_model(y_generator, y_discriminator, x_generator, x_discriminator, data
             generator_loss.backward()
             generator_optimizer.step()
 
-            if batch_idx % 100 == 0:         
+            if batch_index % 2 == 0:         
 
                 print(
-                    f"Epoch [{epoch}/{utilities.NUM_EPOCHS}] Batch {batch_idx}/{len(dataLoader)} \
+                    f"Epoch [{epoch}/{utilities.NUM_EPOCHS}] Batch {batch_index}/{len(dataLoader)} \
                         Loss D: {discriminator_loss:.4f}, loss G: {generator_loss:.4f}"
                 )
-
-                save_image(fake_y*0.5+0.5, f"saved_images1/horse_{epoch}_{batch_idx}.png")
-                save_image(fake_x*0.5+0.5, f"saved_images1/zebra_{epoch}_{batch_idx}.png")
+                
+                utilities.save_images(x_generator, y_generator, val_dataLoader, epoch, folder="saved_images")
 
             

@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from train import train_model
+from train import train_model                   # prova -> train
 from discriminator import Discriminator
 from generator import Generator 
 from torchvision.utils import save_image
@@ -26,15 +26,15 @@ def main():
     L1_LOSS = nn.L1Loss()
 
     train_dataset = CycleGanDataset(directory_y=utilities.TRAIN_DIR+"/horses", directory_x=utilities.TRAIN_DIR+"/zebras", transform=utilities.transforms)
-    train_dataLoader = DataLoader(train_dataset, batch_size=utilities.BATCH_SIZE, shuffle=True, num_workers=utilities.NUM_WORKERS) #, pin_memory=True)
+    train_dataLoader = DataLoader(train_dataset, batch_size=utilities.BATCH_SIZE, shuffle=True, num_workers=utilities.NUM_WORKERS) 
     
     val_dataset = CycleGanDataset(directory_y=utilities.VAL_DIR+"/horses", directory_x=utilities.VAL_DIR+"/zebras", transform=utilities.transforms)
-    val_dataLoader = DataLoader(val_dataset, batch_size=1, shuffle=False)#, pin_memory=True)
+    val_dataLoader = DataLoader(val_dataset, batch_size=1, shuffle=False)
 
-    test_dataset = CycleGanDataset(directory_y=utilities.VAL_DIR+"/horses", directory_x=utilities.VAL_DIR+"/zebras", transform=utilities.transforms)
-    test_dataLoader = DataLoader(val_dataset, batch_size=1, shuffle=False)#, pin_memory=True)
+    test_dataset = CycleGanDataset(directory_y=utilities.TEST_DIR+"/horses", directory_x=utilities.TEST_DIR+"/zebras", transform=utilities.transforms)
+    test_dataLoader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
-    train_model(y_generator, y_discriminator, x_generator, x_discriminator, train_dataLoader, discriminator_optimizer, generator_optimizer, L1_LOSS, MSE)
+    train_model(y_generator, y_discriminator, x_generator, x_discriminator, train_dataLoader, val_dataLoader, discriminator_optimizer, generator_optimizer, L1_LOSS, MSE)
     test_model(x_generator=x_generator, y_generator=y_generator, testLoader=test_dataLoader)
 
 if __name__ == "__main__":
