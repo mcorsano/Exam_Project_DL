@@ -16,8 +16,6 @@ from test import test_model
 
 
 
-
-
 def main():
     discriminator = Discriminator().to(utilities.DEVICE)
     generator = Generator().to(utilities.DEVICE)
@@ -31,15 +29,14 @@ def main():
     train_dataset = Pix2PixDataset(dataset_dir=utilities.TRAIN_DIR)
     train_dataLoader = DataLoader(dataset=train_dataset, batch_size=utilities.BATCH_SIZE, shuffle=True, num_workers=utilities.NUM_WORKERS)
 
-    validation_dataset = Pix2PixDataset(dataset_dir=utilities.VAL_DIR)
-    validation_dataLoader = DataLoader(dataset=validation_dataset, batch_size=1, shuffle=False)
+    val_dataset = Pix2PixDataset(dataset_dir=utilities.VAL_DIR)
+    val_dataLoader = DataLoader(dataset=val_dataset, batch_size=1, shuffle=False)
 
     test_dataset = Pix2PixDataset(dataset_dir=utilities.TEST_DIR)
     test_dataLoader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=False)
 
-    train_model(train_dataLoader, generator, discriminator, generator_optimizer, discriminator_optimizer, L1_LOSS, BCE)
+    train_model(train_dataLoader, val_dataLoader, generator, discriminator, generator_optimizer, discriminator_optimizer, L1_LOSS, BCE)
     test_model(generator=generator, testLoader=test_dataLoader)    
-
 
 
 

@@ -7,38 +7,39 @@ class Generator(nn.Module):
 
     def __init__(self):
         super().__init__()
-        self.down1 = G_NonBatchBlock(in_channels=3, out_channels=64, activation="LeakyReLU")      # 128
-        self.down2 = G_DownBlock(in_channels=64, out_channels=128)                                # 64
-        self.down3 = G_DownBlock(in_channels=128, out_channels=256)                               # 32
-        self.down4 = G_DownBlock(in_channels=256, out_channels=512)                               # 16
-        self.down5 = G_DownBlock(in_channels=512, out_channels=512)                               # 8
-        self.down6 = G_DownBlock(in_channels=512, out_channels=512)                               # 4
-        self.down7 = G_DownBlock(in_channels=512, out_channels=512)                               # 2
-        self.steady = G_NonBatchBlock(in_channels=512, out_channels=512, activation="ReLU")       # 1 x 1
-        self.up1 = G_UpBlock(in_channels=512, out_channels=512, dropout=True)
-        self.up2 = G_UpBlock(in_channels=512*2, out_channels=512, dropout=True)
-        self.up3 = G_UpBlock(in_channels=512*2, out_channels=512, dropout=True)
-        self.up4 = G_UpBlock(in_channels=512*2, out_channels=512, dropout=False)
-        self.up5 = G_UpBlock(in_channels=512*2, out_channels=256, dropout=False)
-        self.up6 = G_UpBlock(in_channels=256*2, out_channels=128, dropout=False)
-        self.up7 = G_UpBlock(in_channels=128*2, out_channels=64, dropout=False)
-        self.up8 = G_FinalBlock(in_channels=128, out_channels=3)
+        self.down_block1 = G_NonBatchBlock(in_channels=3, out_channels=64, activation="LeakyReLU")      # 128
+        self.down_block2 = G_DownBlock(in_channels=64, out_channels=128)                                # 64
+        self.down_block3 = G_DownBlock(in_channels=128, out_channels=256)                               # 32
+        self.down_block4 = G_DownBlock(in_channels=256, out_channels=512)                               # 16
+        self.down_block5 = G_DownBlock(in_channels=512, out_channels=512)                               # 8
+        self.down_block6 = G_DownBlock(in_channels=512, out_channels=512)                               # 4
+        self.down_block7 = G_DownBlock(in_channels=512, out_channels=512)                               # 2
+        self.steady_block = G_NonBatchBlock(in_channels=512, out_channels=512, activation="ReLU")       # 1 x 1
+        self.up_block1 = G_UpBlock(in_channels=512, out_channels=512, dropout=True)
+        self.up_block2 = G_UpBlock(in_channels=512*2, out_channels=512, dropout=True)
+        self.up_block3 = G_UpBlock(in_channels=512*2, out_channels=512, dropout=True)
+        self.up_block4 = G_UpBlock(in_channels=512*2, out_channels=512, dropout=False)
+        self.up_block5 = G_UpBlock(in_channels=512*2, out_channels=256, dropout=False)
+        self.up_block6 = G_UpBlock(in_channels=256*2, out_channels=128, dropout=False)
+        self.up_block7 = G_UpBlock(in_channels=128*2, out_channels=64, dropout=False)
+        self.up_block8 = G_FinalBlock(in_channels=128, out_channels=3)
 
 
-    def forward(self, x):
-        down1 = self.down1(x)            
-        down2 = self.down2(down1)        
-        down3 = self.down3(down2)        
-        down4 = self.down4(down3)        
-        down5 = self.down5(down4)        
-        down6 = self.down6(down5)        
-        down7 = self.down7(down6)        
-        steady = self.steady(down7)      
-        up1 = self.up1(steady)
-        up2 = self.up2(torch.cat([up1, down7], 1))
-        up3 = self.up3(torch.cat([up2, down6], 1))
-        up4 = self.up4(torch.cat([up3, down5], 1))
-        up5 = self.up5(torch.cat([up4, down4], 1))
-        up6 = self.up6(torch.cat([up5, down3], 1))
-        up7 = self.up7(torch.cat([up6, down2], 1))
-        return self.up8(torch.cat([up7, down1], 1))
+    def forward(self, data):
+        down_block1 = self.down_block1(data)            
+        down_block2 = self.down_block2(down_block1)        
+        down_block3 = self.down_block3(down_block2)        
+        down_block4 = self.down_block4(down_block3)        
+        down_block5 = self.down_block5(down_block4)        
+        down_block6 = self.down_block6(down_block5)        
+        down_block7 = self.down_block7(down_block6)        
+        steady_block = self.steady_block(down_block7)      
+        up_block1 = self.up_block1(steady_block)
+        up_block2 = self.up_block2(torch.cat([up_block1, down_block7], 1))
+        up_block3 = self.up_block3(torch.cat([up_block2, down_block6], 1))
+        up_block4 = self.up_block4(torch.cat([up_block3, down_block5], 1))
+        up_block5 = self.up_block5(torch.cat([up_block4, down_block4], 1))
+        up_block6 = self.up_block6(torch.cat([up_block5, down_block3], 1))
+        up_block7 = self.up_block7(torch.cat([up_block6, down_block2], 1))
+        up_block8 = self.up_block8(torch.cat([up_block7, down_block1], 1))
+        return up_block8

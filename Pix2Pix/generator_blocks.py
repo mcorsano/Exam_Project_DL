@@ -12,8 +12,8 @@ class G_NonBatchBlock(nn.Module):
             nn.LeakyReLU(0.2) if activation=="LeakyRelU" else nn.ReLU()
         )
 
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)
 
 
 
@@ -27,8 +27,8 @@ class G_DownBlock(nn.Module):
             nn.LeakyReLU(0.2)
         )
 
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)
 
 
 
@@ -44,9 +44,9 @@ class G_UpBlock(nn.Module):
             nn.ReLU()
         )
     
-    def forward(self, x):
-        x = self.mod(x)
-        return self.dropout(x) if self.use_dropout else x
+    def forward(self, data):
+        data = self.mod(data)
+        return self.dropout(data) if self.use_dropout else data
 
 
 
@@ -59,5 +59,5 @@ class G_FinalBlock(nn.Module):
             nn.Tanh()  # each pixel will have a value in [-1,1]
         )
 
-    def forward(self, x):
-        return self.mod(x)
+    def forward(self, data):
+        return self.mod(data)

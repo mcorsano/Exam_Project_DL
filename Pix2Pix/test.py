@@ -22,7 +22,7 @@ def test_model(generator, testLoader):
             gen_real = gen_real.to(utilities.DEVICE)
 
             gen_fake = generator(real)
-            save_image(real*0.5+0.5, "tests" + f"/real_{it}.png")
-            save_image(gen_fake*0.5+0.5, "tests" + f"/gen_fake_{it}.png")
+            save_image(real*0.5+0.5, "tests3" + f"/real_{it}.png")
+            save_image(gen_fake*0.5+0.5, "tests3" + f"/gen_fake_{it}.png")
             it += 1
 

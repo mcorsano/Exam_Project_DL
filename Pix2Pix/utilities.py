@@ -18,13 +18,13 @@ NUM_EPOCHS = 500
 
 
 def save_images(generator, validationLoader, epoch, folder):
-    real, gen_real = next(iter(validationLoader))
-    real, gen_real = real.to(DEVICE), gen_real.to(DEVICE)
+    real_img, target_img = next(iter(validationLoader))
+    real_img, target_img = real_img.to(DEVICE), target_img.to(DEVICE)
 
     generator.eval()
     with torch.no_grad():
-        gen_fake = generator(real)
-        save_image(real*0.5+0.5, folder + f"/real_{epoch}.png")
-        save_image(gen_fake*0.5+0.5, folder + f"/gen_fake_{epoch}.png")
-        save_image(gen_real*0.5+0.5, folder + f"/label_{epoch}.png")
+        fake_img = generator(real_img)
+        save_image(real_img*0.5+0.5, folder + f"/real_{epoch}.png")
+        save_image(fake_img*0.5+0.5, folder + f"/fake_{epoch}.png")
+        save_image(target_img*0.5+0.5, folder + f"/label_{epoch}.png")
     generator.train()

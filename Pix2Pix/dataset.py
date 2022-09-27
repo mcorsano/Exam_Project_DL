@@ -10,7 +10,7 @@ import cv2
 from albumentations.pytorch import ToTensorV2
 
 
-both_transform = A.Compose(
+input_and_target_transform = A.Compose(
     [
         A.Resize(width=256, height=256)
     ], 
@@ -19,7 +19,7 @@ both_transform = A.Compose(
 
 input_img_transform_pipeline = A.Compose(
     [
-        A.HorizontalFlip(always_apply=False, p=0.5),    # standard value
+        # A.HorizontalFlip(always_apply=False, p=0.5),    # standard value
         A.ColorJitter(brightness=0.2),                  # standard value
         A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
         ToTensorV2()
@@ -28,6 +28,7 @@ input_img_transform_pipeline = A.Compose(
 
 target_img_transform_pipeline = A.Compose(
     [
+        # A.HorizontalFlip(always_apply=False, p=0.5),  
         A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
         ToTensorV2()
     ]
@@ -41,9 +42,9 @@ def transform(img_path):
     input_img = image[:,:600,:]      # [all_channels, :600 px in width, all px in height]
     target_img = image[:,600:,:]     # [all_channels, 600: px in width, all px in height]
 
-    augmentations = both_transform(image = input_img, image0=target_img)
-    input_img = augmentations["image"]
-    target_img = augmentations["image0"]
+    aug = input_and_target_transform(image = input_img, image0=target_img)
+    input_img = aug["image"]
+    target_img = aug["image0"]
 
     input_img = input_img_transform_pipeline(image=input_img)["image"]   
     target_img = target_img_transform_pipeline(image=target_img)["image"]     
