@@ -18,3 +18,8 @@ The network has been trained on the "Horse2Zebra" dataset, downloaded from Kaggl
 </pre>
 
 ## Results
+Horse to zebra:  
+![](saved_images/horse1.png)  ->  ![](saved_images/fake_zebra1.png)   
+
+Zebra to horse:  
+![](saved_images/zebra1.png)  ->  ![](saved_images/fake_horse1.png)
