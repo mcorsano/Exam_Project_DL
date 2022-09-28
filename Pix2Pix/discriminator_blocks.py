@@ -36,7 +36,10 @@ class D_FinalBlock(nn.Module):
 
     def __init__(self, in_channels, out_channels=1, stride=1):
         super().__init__()
-        self.mod = nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=4, stride=stride, padding=1, padding_mode="reflect")
-
+        self.mod = nn.Sequential(
+            nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=4, stride=stride, padding=1, padding_mode="reflect"),
+            nn.Sigmoid()
+        )
+        
     def forward(self, data):
         return self.mod(data)
