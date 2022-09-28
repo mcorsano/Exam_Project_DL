@@ -7,11 +7,11 @@ The network has been trained on the "Horse2Zebra" dataset, downloaded from Kaggl
 <pre>
 ├───data  
 │   └───train  
-│       └───horses
-|       └───zebras
+│   |   └───horses
+|   |   └───zebras
 │   └───val
-│       └───horses
-|       └───zebras
+│   |   └───horses
+|   |   └───zebras
 │   └───test
 │       └───horses
 │       └───zebras
