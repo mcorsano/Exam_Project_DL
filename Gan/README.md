@@ -7,4 +7,4 @@ In particular, it consists of two NNs (the generator and the discriminator) that
 The simple Gan implementation relies on the MNIST dataset which is automatically downloaded and put in the correct folder. It is a database of handwritten digits which has a training set of 60,000 examples, and a test set of 10,000 examples.
 
 # Results
-![](saved_images/generated.png)
+![](saved_images/generated1.png)
