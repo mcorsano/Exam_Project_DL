@@ -1,6 +1,6 @@
 # Gan
 
-Class of ML techniques first introduced by Ian Goodfellow et al. - 2014
+Class of ML techniques first introduced by Ian Goodfellow et al. - 2014.  
 The objective is the one of generating fake data that resembles the original to the point of being indistinguishable.
 In particular, it consists of two NNs (the generator and the discriminator) that are trained one against the other.
 

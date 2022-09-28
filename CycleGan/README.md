@@ -1,5 +1,6 @@
 # CycleGan
-CycleGan is an approach for learning to translate an image from a source domain X to a target domain Y in the absence of paired examples. The goal is to learn a mapping G: X → Y, such that the distribution of images from G(X) is indistinguishable from the distribution Y using an adversarial loss.
+CycleGan is an approach for learning to translate an image from a source domain X to a target domain Y in the absence of paired examples. The goal is to learn a mapping G: X → Y, such that the distribution of images from G(X) is indistinguishable from the distribution Y using an adversarial loss.  
+It was first described by Jun-Yan Zhu, Taesung Park, Phillip Isola, and Alexei A. Efros in the paper "Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks" - 2017.
 
 ## Dataset
 The network has been trained on the "Horse2Zebra" dataset, downloaded from Kaggle. The folder hierarchy of the dataset must be the following:  
